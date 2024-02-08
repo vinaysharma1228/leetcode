@@ -8,40 +8,25 @@
  *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
  * }
  */
-public class Solution {
+class Solution {
     public ListNode reverseKGroup(ListNode head, int k) {
-        if (head == null || k == 1) {
-            return head;
-        }
-
-        ListNode dummy = new ListNode(0);
-        dummy.next = head;
-        ListNode prev = dummy, curr = head;
-
-    
         int count = 0;
-        while (head != null) {
+        ListNode cur = head;
+        while (cur!=null && count!=k) {
+            cur = cur.next;
             count++;
-            head = head.next;
         }
 
-        while (count >= k) {
-            ListNode groupStart = prev.next;
-            ListNode groupEnd = curr;
-
-       
-            for (int i = 0; i < k; i++) {
-                ListNode next = curr.next;
-                curr.next = prev.next;
-                prev.next = curr;
-                curr = next;
+        if (count == k) {
+            cur = reverseKGroup(cur, k);
+            while (count-- > 0) {
+                ListNode tmp = head.next;
+                head.next = cur;
+                cur = head;
+                head = tmp;
             }
-
-            groupStart.next = curr;
-            prev = groupEnd;
-            count -= k;
+            head = cur;
         }
-
-        return dummy.next;
+        return head;
     }
 }
