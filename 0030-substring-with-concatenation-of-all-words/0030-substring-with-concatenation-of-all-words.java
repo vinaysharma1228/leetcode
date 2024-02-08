@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Solution {
     public List<Integer> findSubstring(String s, String[] words) {
@@ -16,17 +20,33 @@ public class Solution {
             wordCount.put(word, wordCount.getOrDefault(word, 0) + 1);
         }
 
-        for (int i = 0; i <= s.length() - totalLength; i++) {
-            String substring = s.substring(i, i + totalLength);
+        for (int i = 0; i < wordLength; i++) {
+            int left = i, right = i, count = 0;
             Map<String, Integer> currentWordCount = new HashMap<>();
 
-            for (int j = 0; j < totalLength; j += wordLength) {
-                String currentWord = substring.substring(j, j + wordLength);
-                currentWordCount.put(currentWord, currentWordCount.getOrDefault(currentWord, 0) + 1);
-            }
+            while (right + wordLength <= s.length()) {
+                String currentWord = s.substring(right, right + wordLength);
+                right += wordLength;
 
-            if (currentWordCount.equals(wordCount)) {
-                result.add(i);
+                if (wordCount.containsKey(currentWord)) {
+                    currentWordCount.put(currentWord, currentWordCount.getOrDefault(currentWord, 0) + 1);
+                    count++;
+
+                    while (currentWordCount.get(currentWord) > wordCount.get(currentWord)) {
+                        String leftWord = s.substring(left, left + wordLength);
+                        left += wordLength;
+                        currentWordCount.put(leftWord, currentWordCount.get(leftWord) - 1);
+                        count--;
+                    }
+
+                    if (count == totalWords) {
+                        result.add(left);
+                    }
+                } else {
+                    currentWordCount.clear();
+                    count = 0;
+                    left = right;
+                }
             }
         }
 
