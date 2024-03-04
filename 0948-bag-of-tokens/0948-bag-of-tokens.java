@@ -1,24 +1,47 @@
-
 class Solution {
     public int bagOfTokensScore(int[] tokens, int power) {
-        Arrays.sort(tokens);
-
-        int left = 0, right = tokens.length - 1;
-        int score = 0, maxScore = 0;
-
-        while (left <= right) {
-            if (power >= tokens[left]) {
-                power -= tokens[left++];
+        int score = 0,last=tokens.length,ans=0,i=0;
+        quicksort(tokens,0,last-1);
+        while(i<last && (power >= tokens[i] || score > 0)){
+            if(power >= tokens[i]){
+                power -= tokens[i];
                 score++;
-                maxScore = Math.max(maxScore, score);
-            } else if (score > 0) {
-                power += tokens[right--];
+                i++;
+            }
+            else{
                 score--;
-            } else {
-                break;
+                power += tokens[--last];
+            }
+            ans = Math.max(score,ans);
+        }
+        return ans;
+    }
+    private void quicksort(int[] arr, int left, int right) 
+    {
+        if (left < right) 
+        {
+            int pivotIndex = partition(arr, left, right);
+            quicksort(arr, left, pivotIndex - 1);
+            quicksort(arr, pivotIndex + 1, right);
+        }
+    }
+    private int partition(int[] arr, int left, int right) 
+    {
+        int pivotValue = arr[right];
+        int i = left - 1;
+        for (int j = left; j < right; j++) 
+        {
+            if (arr[j] < pivotValue) 
+            {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
             }
         }
-
-        return maxScore;
-    }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[right];
+        arr[right] = temp;
+        return i + 1;
+    }   
 }
