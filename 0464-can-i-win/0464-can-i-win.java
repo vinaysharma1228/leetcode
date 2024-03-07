@@ -1,34 +1,28 @@
-import java.util.HashMap;
-import java.util.Map;
-
-public class Solution {
-    public static void main(String[] args) {
-        int maxChoosableInteger = 11;
-        int desiredTotal = 11;
-        System.out.println(canIWin(maxChoosableInteger, desiredTotal)); // Output: false
+class Solution {
+    public boolean canIWin(int maxChoosableInteger, int desiredTotal) {
+        if (desiredTotal <= 0) {
+            return true;
+        }
+        if ((maxChoosableInteger * (maxChoosableInteger + 1)) / 2 < desiredTotal) {
+            return false; // Sum of all numbers is less than desiredTotal
+        }
+        return canIWin(0, maxChoosableInteger, desiredTotal, new Boolean[1 << maxChoosableInteger]);
     }
-
-    public static boolean canIWin(int maxChoosableInteger, int desiredTotal) {
-        if (maxChoosableInteger >= desiredTotal) return true;
-        if ((maxChoosableInteger + 1) * maxChoosableInteger / 2 < desiredTotal) return false;
-        Map<Integer, Boolean> memo = new HashMap<>();
-        return canWin(0, 0, maxChoosableInteger, desiredTotal, memo);
-    }
-
-    private static boolean canWin(int state, int total, int maxChoosableInteger, int desiredTotal, Map<Integer, Boolean> memo) {
-        if (total >= desiredTotal) return false;
-        if (memo.containsKey(state)) return memo.get(state);
+    
+    private boolean canIWin(int usedNumbers, int maxChoosableInteger, int desiredTotal, Boolean[] memo) {
+        if (memo[usedNumbers] != null) {
+            return memo[usedNumbers];
+        }
         for (int i = 1; i <= maxChoosableInteger; i++) {
-            int mask = 1 << i;
-            if ((state & mask) == 0) {
-                int next = state | mask;
-                if (!canWin(next, total + i, maxChoosableInteger, desiredTotal, memo)) {
-                    memo.put(state, true);
+            int currentMask = 1 << (i - 1);
+            if ((usedNumbers & currentMask) == 0) { // Number i not used
+                if (i >= desiredTotal || !canIWin(usedNumbers | currentMask, maxChoosableInteger, desiredTotal - i, memo)) {
+                    memo[usedNumbers] = true;
                     return true;
                 }
             }
         }
-        memo.put(state, false);
+        memo[usedNumbers] = false;
         return false;
     }
 }
